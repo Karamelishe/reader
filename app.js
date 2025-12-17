@@ -12,7 +12,10 @@ const state = {
   filtered: [],
   reportType: "—",
   severityFilters: new Set(severityOrder),
+ codex/create-service-for-semgrep-report-visualization-e39j8v
   lastFile: null,
+=======
+ main
 };
 
 const dropZone = document.getElementById("drop-zone");
@@ -26,9 +29,12 @@ const severityBar = document.getElementById("severity-bar");
 
 const semgrepSampleBtn = document.getElementById("load-semgrep-sample");
 const sarifSampleBtn = document.getElementById("load-sarif-sample");
+ codex/create-service-for-semgrep-report-visualization-e39j8v
 const uploadServerBtn = document.getElementById("upload-server-btn");
 const shareStatus = document.getElementById("share-status");
 const shareLink = document.getElementById("share-link");
+=======
+ main
 
 function setStatus(message) {
   statusBox.textContent = message || "";
@@ -38,6 +44,7 @@ function setError(message) {
   errorBox.textContent = message || "";
 }
 
+ codex/create-service-for-semgrep-report-visualization-e39j8v
 function setShareStatus(message, link) {
   shareStatus.textContent = message || "";
   if (link) {
@@ -51,6 +58,8 @@ function setShareStatus(message, link) {
   }
 }
 
+=======
+ main
 function normalizeSeverity(raw = "info") {
   const value = String(raw).toLowerCase();
   if (value.includes("critical")) return "critical";
@@ -149,9 +158,12 @@ function handleFile(file) {
   if (!file) return;
   setError("");
   setStatus(`Загружаем ${file.name}...`);
+ codex/create-service-for-semgrep-report-visualization-e39j8v
   state.lastFile = file;
   uploadServerBtn.disabled = false;
   setShareStatus("", "");
+=======
+ main
 
   const reader = new FileReader();
   reader.onload = (event) => {
@@ -166,9 +178,12 @@ function handleFile(file) {
       console.error(err);
       setError(err.message);
       setStatus("");
+ codex/create-service-for-semgrep-report-visualization-e39j8v
       state.lastFile = null;
       uploadServerBtn.disabled = true;
       setShareStatus("", "");
+=======
+ main
       state.issues = [];
       state.filtered = [];
       renderIssues();
@@ -184,6 +199,7 @@ function handleFile(file) {
   reader.readAsText(file);
 }
 
+ codex/create-service-for-semgrep-report-visualization-e39j8v
 async function uploadToServer() {
   if (!state.lastFile) {
     setShareStatus("Сначала загрузите отчёт локально");
@@ -210,6 +226,8 @@ async function uploadToServer() {
   }
 }
 
+=======
+ main
 function buildSeverityFilters() {
   severityFilterContainer.innerHTML = "";
 
@@ -423,9 +441,12 @@ async function loadSample(path) {
     const parsed = normalizeReport(json);
     state.issues = parsed.issues;
     state.reportType = parsed.type + " (sample)";
+ codex/create-service-for-semgrep-report-visualization-e39j8v
     state.lastFile = null;
     uploadServerBtn.disabled = true;
     setShareStatus("", "");
+=======
+ main
     applyFilters();
     setStatus("Пример загружен");
   } catch (err) {
@@ -434,6 +455,7 @@ async function loadSample(path) {
   }
 }
 
+ codex/create-service-for-semgrep-report-visualization-e39j8v
 async function loadRemoteReport(url) {
   try {
     setError("");
@@ -455,24 +477,32 @@ async function loadRemoteReport(url) {
   }
 }
 
+=======
+ main
 function init() {
   buildSeverityFilters();
   setupDropZone();
   setupFileInput();
   setupSearch();
+ codex/create-service-for-semgrep-report-visualization-e39j8v
   uploadServerBtn.addEventListener("click", uploadToServer);
   setShareStatus("", "");
+=======
+ main
   renderSummary();
   renderSeverityBar();
   renderIssues();
 
   semgrepSampleBtn.addEventListener("click", () => loadSample("samples/semgrep-sample.json"));
   sarifSampleBtn.addEventListener("click", () => loadSample("samples/semgrep-sample.sarif"));
+ codex/create-service-for-semgrep-report-visualization-e39j8v
 
   const reportParam = new URLSearchParams(window.location.search).get("report");
   if (reportParam) {
     loadRemoteReport(reportParam);
   }
+=======
+ main
 }
 
 init();

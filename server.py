@@ -67,6 +67,8 @@ class ReaderHandler(SimpleHTTPRequestHandler):
             self.respond_json({"files": files})
             return
 
+        # Strip query string so shared links like /?report=... return index.html
+        self.path = parsed.path or "/"
         return super().do_GET()
 
     def server_origin(self):

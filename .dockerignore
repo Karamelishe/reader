@@ -1,0 +1,5 @@
+node_modules
+uploads
+__pycache__
+.env
+npm-debug.log

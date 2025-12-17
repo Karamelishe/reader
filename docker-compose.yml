@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  reader:
+    build: .
+    ports:
+      - "8080:8000"
+    volumes:
+      - uploads:/app/uploads
+    environment:
+      - PORT=8000
+    restart: unless-stopped
+volumes:
+  uploads:

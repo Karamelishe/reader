@@ -27,6 +27,7 @@ const severityBar = document.getElementById("severity-bar");
 const semgrepSampleBtn = document.getElementById("load-semgrep-sample");
 const sarifSampleBtn = document.getElementById("load-sarif-sample");
 const uploadServerBtn = document.getElementById("upload-server-btn");
+const downloadPdfBtn = document.getElementById("download-pdf");
 const shareStatus = document.getElementById("share-status");
 const shareLink = document.getElementById("share-link");
 const tabs = document.querySelectorAll(".tab");
@@ -160,6 +161,7 @@ function handleFile(file) {
   setStatus(`Загружаем ${file.name}...`);
   state.lastFile = file;
   uploadServerBtn.disabled = false;
+  downloadPdfBtn.disabled = false;
   setShareStatus("", "");
 
   const reader = new FileReader();
@@ -177,6 +179,7 @@ function handleFile(file) {
       setStatus("");
       state.lastFile = null;
       uploadServerBtn.disabled = true;
+      downloadPdfBtn.disabled = true;
       setShareStatus("", "");
       state.issues = [];
       state.filtered = [];
@@ -229,6 +232,14 @@ async function loadHistory() {
   } catch (err) {
     historyList.innerHTML = `<p class="error">${err.message}</p>`;
   }
+}
+
+function downloadPdf() {
+  if (!state.filtered.length) {
+    alert("Сначала загрузите отчёт");
+    return;
+  }
+  window.print();
 }
 
 function renderHistory(files) {
@@ -497,6 +508,7 @@ async function loadSample(path) {
     state.reportType = parsed.type + " (sample)";
     state.lastFile = null;
     uploadServerBtn.disabled = true;
+    downloadPdfBtn.disabled = false;
     setShareStatus("", "");
     applyFilters();
     setStatus("Пример загружен");
@@ -518,6 +530,7 @@ async function loadRemoteReport(url) {
     state.reportType = parsed.type + " (remote)";
     state.lastFile = null;
     uploadServerBtn.disabled = true;
+    downloadPdfBtn.disabled = false;
     setShareStatus("", "");
     applyFilters();
     setStatus("Отчёт загружен по ссылке");
@@ -533,6 +546,7 @@ function init() {
   setupFileInput();
   setupSearch();
   uploadServerBtn.addEventListener("click", uploadToServer);
+  downloadPdfBtn.addEventListener("click", downloadPdf);
   tabs.forEach((tab) =>
     tab.addEventListener("click", () => {
       switchTab(tab.dataset.tab);

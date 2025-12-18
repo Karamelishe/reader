@@ -154,7 +154,7 @@ h2 {
 .share-controls {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(160px, auto));
   align-items: center;
   gap: 10px;
 }
@@ -167,6 +167,11 @@ h2 {
 
 .share-link:hover {
   text-decoration: underline;
+}
+
+.pdf-hint {
+  font-size: 12px;
+  color: var(--muted);
 }
 
 .history-actions {
@@ -418,5 +423,51 @@ h2 {
 
   .hint {
     grid-column: 1;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+    padding: 0;
+  }
+
+  .site-header,
+  .tabs,
+  .drop-panel,
+  .filters,
+  .share-controls,
+  .history-actions,
+  #issues-panel .issue-card,
+  #summary-panel,
+  #issues-panel {
+    box-shadow: none;
+  }
+
+  .button,
+  .share-link,
+  #search,
+  .tabs,
+  .history-actions,
+  #load-status,
+  #error {
+    display: none !important;
+  }
+
+  .panel {
+    border: 1px solid #d1d5db;
+    background: #fff;
+  }
+
+  .issue-card {
+    background: #fff;
+    border-color: #e5e7eb;
+  }
+
+  .severity-pill,
+  .chip {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }

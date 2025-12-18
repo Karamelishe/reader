@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Semgrep",
+          "informationUri": "https://semgrep.dev",
+          "rules": [
+            {
+              "id": "python.security.injection.sql-string-format",
+              "shortDescription": {"text": "SQL query built from string formatting"},
+              "helpUri": "https://semgrep.dev/r/python.security.injection.sql-string-format",
+              "properties": {
+                "tags": ["security", "injection", "cwe-89"]
+              }
+            },
+            {
+              "id": "python.lang.correctness.useless-if",
+              "shortDescription": {"text": "If statement condition is always true"},
+              "helpUri": "https://semgrep.dev/r/python.lang.correctness.useless-if",
+              "properties": {
+                "tags": ["correctness", "maintainability"]
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "python.security.injection.sql-string-format",
+          "level": "error",
+          "message": {"text": "User input is interpolated directly into a SQL query."},
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {"uri": "service/api.py"},
+                "region": {
+                  "startLine": 120,
+                  "startColumn": 15,
+                  "endLine": 123,
+                  "snippet": {"text": "query = f\"SELECT * FROM orders WHERE id = {order_id}\""}
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "severity/semgrep": "ERROR",
+            "semgrep.fingerprint": "6f449874a9ef4fd4b3c21590e45c2470"
+          }
+        },
+        {
+          "ruleId": "python.lang.correctness.useless-if",
+          "level": "warning",
+          "message": {"text": "Condition is constant and can be simplified."},
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {"uri": "service/logic.py"},
+                "region": {
+                  "startLine": 44,
+                  "startColumn": 9,
+                  "endLine": 47,
+                  "snippet": {"text": "if True:\n    do_work()"}
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "severity/semgrep": "WARNING",
+            "semgrep.fingerprint": "87d46da5fd114db5884c6c6a9b164ce5"
+          }
+        }
+      ]
+    }
+  ]
+}

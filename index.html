@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Semgrep & SARIF Report Reader</title>
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">Offline viewer</p>
+        <h1>Чтение отчётов Semgrep JSON и SARIF</h1>
+        <p class="lede">
+          Загрузите файл Semgrep (JSON) или любой SARIF отчёт, чтобы быстро
+          увидеть сгруппированные результаты, детализацию по файлам и наглядное
+          распределение по уровням риска.
+        </p>
+        <div class="header-actions">
+          <button class="button" id="load-semgrep-sample">Показать Semgrep пример</button>
+          <button class="button ghost" id="load-sarif-sample">Показать SARIF пример</button>
+        </div>
+      </div>
+      <div class="badge">Работает полностью локально</div>
+    </header>
+
+    <main>
+      <div class="tabs">
+        <button class="tab active" data-tab="upload">Загрузка</button>
+        <button class="tab" data-tab="history">Загруженные отчёты</button>
+      </div>
+
+      <section class="panel drop-panel tab-content active" id="drop-panel" data-tab="upload">
+        <div class="drop-zone" id="drop-zone">
+          <div class="drop-icon" aria-hidden="true">📄</div>
+          <div>
+            <h2>Перетащите отчёт или выберите файл</h2>
+            <p class="muted">Поддерживаются .json и .sarif</p>
+          </div>
+          <label class="button" for="file-input">Выбрать файл</label>
+          <input type="file" id="file-input" accept=".json,.sarif,.sarif.json" />
+          <p class="hint">
+            Файл не покидает ваш браузер — вся обработка происходит локально.
+          </p>
+          <div class="share-controls">
+            <button class="button ghost" id="upload-server-btn" disabled>
+              Сохранить отчёт на сервере
+            </button>
+            <button class="button" id="download-pdf" disabled>Скачать PDF</button>
+            <p class="muted" id="share-status"></p>
+            <a class="share-link" id="share-link" href="" target="_blank"></a>
+          </div>
+        </div>
+        <div id="load-status" class="muted status"></div>
+        <div class="error" id="error"></div>
+      </section>
+
+      <section class="panel tab-content" id="history-panel" data-tab="history">
+        <div class="history-actions">
+          <button class="button ghost" id="refresh-history">Обновить список</button>
+        </div>
+        <div id="history-list" class="history-list"></div>
+      </section>
+
+      <section class="panel summary" id="summary-panel">
+        <div class="summary-grid">
+          <div class="card">
+            <p class="muted">Всего находок</p>
+            <p class="metric" id="total-findings">—</p>
+          </div>
+          <div class="card">
+            <p class="muted">Файлов</p>
+            <p class="metric" id="total-files">—</p>
+          </div>
+          <div class="card">
+            <p class="muted">Правил</p>
+            <p class="metric" id="total-rules">—</p>
+          </div>
+          <div class="card">
+            <p class="muted">Тип отчёта</p>
+            <p class="metric" id="report-type">—</p>
+          </div>
+        </div>
+        <div class="severity-bar" id="severity-bar"></div>
+      </section>
+
+      <section class="panel filters">
+        <div class="filter-group" id="severity-filters"></div>
+        <label class="search">
+          <span class="muted">Поиск</span>
+          <input
+            type="search"
+            id="search"
+            placeholder="Путь, правило, сообщение..."
+            autocomplete="off"
+          />
+        </label>
+      </section>
+
+      <section class="panel" id="issues-panel">
+        <div id="issues"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

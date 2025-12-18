@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "results": [
+    {
+      "check_id": "python.lang.best-practice.useless-eqeq",
+      "path": "src/auth.py",
+      "start": {"line": 34, "col": 9},
+      "end": {"line": 34, "col": 18},
+      "extra": {
+        "message": "Comparison to None should use 'is None' for clarity.",
+        "lines": "    if user_id == None:\n        raise ValueError('missing user id')",
+        "severity": "ERROR",
+        "fingerprint": "c9872a0f0d52bd67b0308229f8f55c84",
+        "metadata": {
+          "category": "best-practice",
+          "cwe": ["CWE-480"],
+          "references": ["https://cwe.mitre.org/data/definitions/480.html"]
+        }
+      }
+    },
+    {
+      "check_id": "python.security.audit.dangerous-subprocess-use",
+      "path": "src/runner.py",
+      "start": {"line": 72, "col": 7},
+      "end": {"line": 74, "col": 8},
+      "extra": {
+        "message": "Detected use of subprocess without shell=False hardening.",
+        "lines": "    subprocess.Popen(cmd)\n    log.info('ran command %s', cmd)",
+        "severity": "WARNING",
+        "fingerprint": "3e03b0a0bf1d6c1f0b7f0ad0350d7c02",
+        "metadata": {
+          "category": "security",
+          "owasp": ["A06:2021"],
+          "references": [
+            "https://docs.python.org/3/library/subprocess.html#security-considerations"
+          ]
+        }
+      }
+    }
+  ],
+  "errors": []
+}

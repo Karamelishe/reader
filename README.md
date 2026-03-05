@@ -11,6 +11,8 @@
 - Детальная карточка каждой находки с фрагментом кода, тегами и ссылками на правило
 - Встроенные демо-отчёты (Semgrep JSON и SARIF) для быстрого просмотра интерфейса
 - Возможность загрузить отчёт на сервер и получить ссылку (`?report=<url>`) для передачи разработчикам
+- API для CI/CD: загрузка Semgrep/SARIF отчёта напрямую из GitLab job
+- Пагинация: в UI для списка находок и истории загрузок, а также в `GET /reports`
 
 ## Развёртывание как сервиса
 
@@ -39,6 +41,33 @@
 > ```bash
 > python -m http.server 8000
 > ```
+
+
+## API для GitLab CI
+
+### Загрузка отчёта из job
+`POST /api/reports?filename=<имя_файла>`
+
+- Тело запроса: сырой JSON (`Content-Type: application/json`) в формате Semgrep (`results`) или SARIF (`runs`).
+- Если задана переменная окружения `API_TOKEN`, требуется один из заголовков:
+  - `X-API-Token: <token>`
+  - `Authorization: Bearer <token>`
+
+Пример для `.gitlab-ci.yml`:
+
+```bash
+semgrep --json > semgrep-report.json
+curl -sS -X POST \
+  -H "Content-Type: application/json" \
+  -H "X-API-Token: $API_TOKEN" \
+  --data-binary @semgrep-report.json \
+  "$READER_URL/api/reports?filename=semgrep-$CI_PIPELINE_ID.json"
+```
+
+### Пагинация истории
+`GET /reports?page=1&per_page=20`
+
+Ответ содержит `files` и объект `pagination` (`page`, `per_page`, `total`, `total_pages`).
 
 ## Структура
 - `index.html` — разметка и точки подключения стилей/скриптов

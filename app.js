@@ -13,6 +13,11 @@ const state = {
   reportType: "—",
   severityFilters: new Set(severityOrder),
   lastFile: null,
+  issuePage: 1,
+  issuesPerPage: 25,
+  historyPage: 1,
+  historyPerPage: 10,
+  historyTotalPages: 1,
 };
 
 const dropZone = document.getElementById("drop-zone");
@@ -34,6 +39,8 @@ const tabs = document.querySelectorAll(".tab");
 const tabContents = document.querySelectorAll(".tab-content");
 const historyList = document.getElementById("history-list");
 const refreshHistoryBtn = document.getElementById("refresh-history");
+const historyPagination = document.getElementById("history-pagination");
+const issuesPagination = document.getElementById("issues-pagination");
 
 function setStatus(message) {
   statusBox.textContent = message || "";
@@ -223,15 +230,49 @@ async function uploadToServer() {
   }
 }
 
-async function loadHistory() {
+async function loadHistory(page = state.historyPage) {
   try {
-    const response = await fetch("/reports");
+    state.historyPage = Math.max(page, 1);
+    const response = await fetch(`/reports?page=${state.historyPage}&per_page=${state.historyPerPage}`);
     if (!response.ok) throw new Error("Не удалось получить список отчётов");
     const data = await response.json();
+    const pagination = data.pagination || {};
+    state.historyTotalPages = pagination.total_pages || 1;
+    state.historyPage = pagination.page || state.historyPage;
     renderHistory(data.files || []);
+    renderPagination({
+      container: historyPagination,
+      page: state.historyPage,
+      totalPages: state.historyTotalPages,
+      onPageChange: (nextPage) => loadHistory(nextPage),
+    });
   } catch (err) {
     historyList.innerHTML = `<p class="error">${err.message}</p>`;
+    historyPagination.innerHTML = "";
   }
+}
+
+function renderPagination({ container, page, totalPages, onPageChange }) {
+  container.innerHTML = "";
+  if (totalPages <= 1) return;
+
+  const prev = document.createElement("button");
+  prev.className = "button ghost";
+  prev.textContent = "← Назад";
+  prev.disabled = page <= 1;
+  prev.addEventListener("click", () => onPageChange(page - 1));
+
+  const label = document.createElement("span");
+  label.className = "muted";
+  label.textContent = `Страница ${page} из ${totalPages}`;
+
+  const next = document.createElement("button");
+  next.className = "button ghost";
+  next.textContent = "Вперёд →";
+  next.disabled = page >= totalPages;
+  next.addEventListener("click", () => onPageChange(page + 1));
+
+  container.append(prev, label, next);
 }
 
 function downloadPdf() {
@@ -362,6 +403,7 @@ function applyFilters() {
     return (a.startLine || 0) - (b.startLine || 0);
   });
 
+  state.issuePage = 1;
   renderSummary();
   renderSeverityBar();
   renderIssues();
@@ -409,6 +451,7 @@ function renderIssues() {
   issuesContainer.innerHTML = "";
 
   if (!state.filtered.length) {
+    issuesPagination.innerHTML = "";
     const empty = document.createElement("div");
     empty.className = "empty-state";
     empty.textContent = state.issues.length
@@ -418,7 +461,12 @@ function renderIssues() {
     return;
   }
 
-  state.filtered.forEach((issue) => {
+  const totalPages = Math.max(Math.ceil(state.filtered.length / state.issuesPerPage), 1);
+  state.issuePage = Math.min(state.issuePage, totalPages);
+  const start = (state.issuePage - 1) * state.issuesPerPage;
+  const pageIssues = state.filtered.slice(start, start + state.issuesPerPage);
+
+  pageIssues.forEach((issue) => {
     const card = document.createElement("article");
     card.className = "issue-card";
 
@@ -459,6 +507,16 @@ function renderIssues() {
 
     card.append(header, message, meta, snippet);
     issuesContainer.appendChild(card);
+  });
+
+  renderPagination({
+    container: issuesPagination,
+    page: state.issuePage,
+    totalPages,
+    onPageChange: (nextPage) => {
+      state.issuePage = nextPage;
+      renderIssues();
+    },
   });
 }
 
@@ -564,6 +622,7 @@ function init() {
   );
   refreshHistoryBtn.addEventListener("click", loadHistory);
   setShareStatus("", "");
+  state.issuePage = 1;
   renderSummary();
   renderSeverityBar();
   renderIssues();

@@ -186,6 +186,22 @@ h2 {
   gap: 10px;
 }
 
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.pagination .button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .history-item {
   display: grid;
   grid-template-columns: 1fr auto auto;
